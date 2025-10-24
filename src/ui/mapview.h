@@ -1,3 +1,11 @@
+/*
+ * mapview.h
+ *
+ * QGraphicsView-based widget to render a GameMap and optional path.
+ * Provides signals for left/right tile clicks.
+ *
+ * Author: Sylvain Villet
+ */
 #pragma once
 #include <QGraphicsView>
 #include <QGraphicsScene>

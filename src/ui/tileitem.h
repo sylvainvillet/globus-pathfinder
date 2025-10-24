@@ -1,3 +1,10 @@
+/*
+ * tileitem.h
+ *
+ * QGraphics item representing a Tile in the map.
+ *
+ * Author: Sylvain Villet
+ */
 #pragma once
 
 #include <QObject>

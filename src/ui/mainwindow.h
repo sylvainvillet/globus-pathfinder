@@ -1,3 +1,12 @@
+/*
+ * mainwindow.h
+ *
+ * Main application window for the Globus Pathfinder UI.
+ * Hosts the map view and exposes actions to import/export maps
+ * and to compute paths on the current GameMap.
+ *
+ * Author: Sylvain Villet
+ */
 #pragma once
 
 #include <QMainWindow>
@@ -22,7 +31,7 @@ private slots:
 private:
     void createMenus();
 
-    GameMap m_map;
+    GameMap* m_map = nullptr;
     QVector<QPoint> path;
 
     MapView* m_map_view = nullptr;

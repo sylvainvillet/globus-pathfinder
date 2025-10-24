@@ -13,11 +13,13 @@
 #include <QStatusBar>
 
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent), m_map_view(new MapView(this)) {
+    : QMainWindow(parent), 
+    m_map(new GameMap(this)), 
+    m_map_view(new MapView(this)) {
     setCentralWidget(m_map_view);
 
-    connect(m_map_view, &MapView::tileLeftClicked, &m_map, &GameMap::setStart);
-    connect(m_map_view, &MapView::tileRightClicked, &m_map, &GameMap::setTarget);
+    connect(m_map_view, &MapView::tileLeftClicked, m_map, &GameMap::setStart);
+    connect(m_map_view, &MapView::tileRightClicked, m_map, &GameMap::setTarget);
 
     // Use queued connections to avoid redrawing the map before the click handling is finished
     connect(m_map_view, &MapView::tileLeftClicked, this, &MainWindow::refresh, Qt::QueuedConnection);
@@ -28,9 +30,9 @@ MainWindow::MainWindow(QWidget* parent)
 
     createMenus();
 
-    connect(&m_map, &GameMap::mapLoaded, this, &MainWindow::refresh);
+    connect(m_map, &GameMap::mapLoaded, this, &MainWindow::refresh);
 
-    if (!m_map.loadDefault()) {
+    if (!m_map->loadDefault()) {
         QMessageBox::warning(this, "Error", "Failed to load default map");
     }
 
@@ -61,7 +63,7 @@ void MainWindow::importJsonMap() {
     if (filePath.isEmpty())
         return;
 
-    if (!m_map.loadFromFile(filePath)) {
+    if (!m_map->loadFromFile(filePath)) {
         QMessageBox::warning(this, "Error", "Failed to load JSON map.");
         return;
     }
@@ -76,7 +78,7 @@ void MainWindow::exportJsonMap() {
         return;
 
     // Build JSON object
-    QJsonObject mapJson = m_map.saveToJson();
+    QJsonObject mapJson = m_map->saveToJson();
     QFile file(filePath);
     if (!file.open(QIODevice::WriteOnly)) {
         QMessageBox::warning(this, "Error", "Cannot save file.");
@@ -122,10 +124,10 @@ void MainWindow::exportJsonPath() {
 
 void MainWindow::refresh() {
     findPath();
-    m_map_view->draw(m_map, path);
+    m_map_view->draw(*m_map, path);
 }
 
 void MainWindow::findPath() {
-    PathFinder pf(m_map);
+    PathFinder pf(*m_map);
     path = pf.findPath();
 }

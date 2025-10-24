@@ -1,3 +1,11 @@
+/*
+ * gamemap.h
+ *
+ * Represents the game map: grid of Tile objects, start/target positions,
+ * loading/saving via QJson, and utility helpers.
+ *
+ * Author: Sylvain Villet
+ */
 #pragma once
 
 #include <QObject>

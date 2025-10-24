@@ -1,3 +1,10 @@
+/*
+ * tile.h
+ *
+ * Definition of the Tile class representing different types of tiles.
+ *
+ * Author: Sylvain Villet
+ */
 #pragma once
 
 #include <QtGlobal>

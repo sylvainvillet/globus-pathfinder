@@ -1,9 +1,16 @@
+/*
+ * pathfinder.h
+ *
+ * A* pathfinding for GameMap: 
+ * computes shortest path between two points on the game map.
+ *
+ * Author: Sylvain Villet
+ */
 #pragma once
 
 #include <QPoint>
 #include <QVector>
 #include "../models/gamemap.h"
-
 
 class PathFinder {
 public:
