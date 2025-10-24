@@ -29,6 +29,7 @@ if(${QT_VERSION_MAJOR} GREATER_EQUAL 6)
         resources.qrc
         logic/pathfinder.h logic/pathfinder.cpp
         ui/tileitem.h ui/tileitem.cpp
+        ui/mapview.h ui/mapview.cpp
 
     )
 # Define target properties for Android with Qt 6 as:

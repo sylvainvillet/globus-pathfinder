@@ -3,6 +3,7 @@
 #include <QMainWindow>
 #include <QGraphicsScene>
 #include <QGraphicsView>
+#include "mapview.h"
 #include "../models/gamemap.h"
 
 class MainWindow : public QMainWindow {
@@ -17,16 +18,12 @@ private slots:
     void exportJsonPath();
     void refresh();
     void findPath();
-    void drawMap();
-    void drawPath();
 
 private:
-    const int tileSize = 24;
     void createMenus();
 
     GameMap m_map;
     QVector<QPoint> path;
 
-    QGraphicsScene* m_scene = nullptr;
-    QGraphicsView* m_view = nullptr;
+    MapView* m_map_view = nullptr;
 };

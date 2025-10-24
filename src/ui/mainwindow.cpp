@@ -13,10 +13,15 @@
 #include <QStatusBar>
 
 MainWindow::MainWindow(QWidget* parent)
-    : QMainWindow(parent) {
-    m_scene = new QGraphicsScene(this);
-    m_view = new QGraphicsView(m_scene, this);
-    setCentralWidget(m_view);
+    : QMainWindow(parent), m_map_view(new MapView(this)) {
+    setCentralWidget(m_map_view);
+
+    connect(m_map_view, &MapView::tileLeftClicked, &m_map, &GameMap::setStart);
+    connect(m_map_view, &MapView::tileRightClicked, &m_map, &GameMap::setTarget);
+
+    // Use queued connections to avoid redrawing the map before the click handling is finished
+    connect(m_map_view, &MapView::tileLeftClicked, this, &MainWindow::refresh, Qt::QueuedConnection);
+    connect(m_map_view, &MapView::tileRightClicked, this, &MainWindow::refresh, Qt::QueuedConnection);
 
     // Set tooltip text
     statusBar()->showMessage("Left click: Start | Right click: Target");
@@ -117,58 +122,10 @@ void MainWindow::exportJsonPath() {
 
 void MainWindow::refresh() {
     findPath();
-    drawMap();
-    drawPath();
+    m_map_view->draw(m_map, path);
 }
 
 void MainWindow::findPath() {
     PathFinder pf(m_map);
     path = pf.findPath();
-}
-
-void MainWindow::drawMap() {
-
-    m_scene->clear();
-
-    for (int y = 0; y < m_map.height(); ++y) {
-        for (int x = 0; x < m_map.width(); ++x) {
-            const auto& tile = m_map.tiles()[y][x];
-            TileItem* item = new TileItem(y, x, tile, tileSize);
-
-            connect(item, &TileItem::leftClicked, &m_map, &GameMap::setStart);
-            connect(item, &TileItem::rightClicked, &m_map, &GameMap::setTarget);
-
-            // Use queued connections to avoid redrawing the map before the click handling is finished
-            connect(item, &TileItem::leftClicked, this, &MainWindow::refresh, Qt::QueuedConnection);
-            connect(item, &TileItem::rightClicked, this, &MainWindow::refresh, Qt::QueuedConnection);
-
-            m_scene->addItem(item);
-        }
-    }
-
-    const int width = m_map.width() * tileSize;
-    const int height = m_map.height() * tileSize;
-    m_scene->setSceneRect(0, 0, width, height);
-    resize(width, height + statusBar()->geometry().height());
-}
-
-void MainWindow::drawPath() {
-    if (path.isEmpty())
-        return;
-
-    QPen pen(Qt::red);
-    pen.setWidth(2);
-
-    // Draw a line connecting centers of each tile
-    for (int i = 0; i < path.size() - 1; ++i) {
-        QPoint from = path[i];
-        QPoint to = path[i + 1];
-
-        qreal x1 = from.x() * tileSize + tileSize / 2.0;
-        qreal y1 = from.y() * tileSize + tileSize / 2.0;
-        qreal x2 = to.x() * tileSize + tileSize / 2.0;
-        qreal y2 = to.y() * tileSize + tileSize / 2.0;
-
-        m_scene->addLine(x1, y1, x2, y2, pen);
-    }
 }
