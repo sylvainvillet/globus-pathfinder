@@ -6,7 +6,7 @@ Globus Pathfinder is a Qt-based pathfinding tool that loads grid-based maps from
 This project is part of a take-home assignment.
 
 ## Demo
-![Demo](images/demo.gif)
+![Demo v2](images/demo_v2.gif)
 
 ## Build instructions
 The `src` folder contains a standard Qt 6 / CMake project that can be builded with QtCreator or from command line following these instructions:
@@ -36,24 +36,25 @@ The file menu lets you import or export a map and export a path.
 - README.md — Project documentation and usage (this file).
 
 ## Design Decisions
-### Global architecture
+### Software architecture
 I decided to split my code in 3 subfolders: UI, models and logic. This makes it easy to understand and maintain.
 The UI is also splitted in 3 classes: 
-- MainWindow for the File menu actions, the status bar and as a map container
+- MainWindow for the File menu actions, the status bar and refresh timer
 - MapView for drawing the map and path
 - TileItem for drawing a single tile and sending signals when a tile is clicked
 
 ### UI/UX
-The UI/UX is pretty straightforward, I decided to interact with left and right clicks on tiles without adding buttons for the different actions.
-There's no "start" button either, just click and the path updates automatically.
+For the UI/UX, I started with a static grid with just the visualization of the start, target and path as shown below:
+![Demo](images/demo.gif)
 
-The goal here was to showcase the shortest path from start to target which is the output of the algorithm. 
+With this view I was able to test the algorithm easily by changing the start position with the left click and the target position with the right click.
 
-Another approach could have been to move the unit to the target position with an animation, which would be how a game would react but then it's harder to see the actual path.
+I then decided to implement it more like an actual game, where we click to set the target and the travel is animated and can be interrupted if we choose a new target during the travel.
 
 ### Pathfinding algorithm
 For finding the path to the target position, I thought about 2 approaches:
 - "GPS" approach, meaning we know the full map and we can find the quickest path before starting the travel
 - "fog" approach, meaning we only know the tiles around us and where the target is. This is often the case in RTS games where the player discovers the map as it progresses
+
 I chose to pick the first approach because we can easily know the shortest path to the target this way.
-For the algorithm, A* is a classic for a reason, it's very effective
+For the algorithm, A* is a classic pathfinding algorithm because it's very effective at finding the shortest path.

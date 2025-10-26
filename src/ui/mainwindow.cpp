@@ -29,7 +29,7 @@ MainWindow::MainWindow(QWidget* parent)
     connect(m_map_view, &MapView::tileClicked, this, &MainWindow::refresh, Qt::QueuedConnection);
 
     // Set tooltip text
-    statusBar()->showMessage("Click on a tile to start");
+    statusBar()->showMessage("Click on a tile to move");
 
     createMenus();
 
