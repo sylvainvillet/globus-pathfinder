@@ -22,8 +22,7 @@ void MapView::draw(const GameMap& map, const QVector<QPoint> &path) {
             const Tile& tile = map.tiles()[y][x];
             TileItem* item = new TileItem(y, x, tile, TILE_SIZE);
 
-            connect(item, &TileItem::leftClicked, this, &MapView::tileLeftClicked);
-            connect(item, &TileItem::rightClicked, this, &MapView::tileRightClicked);
+            connect(item, &TileItem::clicked, this, &MapView::tileClicked);
             m_scene->addItem(item);
         }
     }

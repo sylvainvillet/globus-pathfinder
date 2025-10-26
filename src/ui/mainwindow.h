@@ -27,12 +27,16 @@ private slots:
     void exportJsonPath();
     void refresh();
     void findPath();
+    void travel();
 
 private:
     void createMenus();
 
     GameMap* m_map = nullptr;
-    QVector<QPoint> path;
+    QVector<QPoint> m_path;
+    QVector<QPoint> m_last_path;
 
     MapView* m_map_view = nullptr;
+
+    QTimer* m_travel_timer = nullptr;
 };

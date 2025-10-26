@@ -155,7 +155,8 @@ bool GameMap::areCoordinatesInMap(int row, int col) const {
 }
 
 void GameMap::setStart(int row, int col) {
-    if (areCoordinatesInMap(row, col) && m_tiles[row][col].isReachable()) {
+    if (areCoordinatesInMap(row, col) &&
+        (m_tiles[row][col].isReachable() || m_tiles[row][col].isTarget())) {
         do {
             QPoint currentStart = startPosition();
             if (isPointInMap(currentStart)) {

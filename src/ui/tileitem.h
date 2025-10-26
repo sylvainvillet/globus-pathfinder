@@ -18,8 +18,7 @@ public:
     TileItem(int row, int col, const Tile& tile, qreal size);
 
 signals:
-    void leftClicked(int row, int col);
-    void rightClicked(int row, int col);
+    void clicked(int row, int col);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
@@ -28,4 +27,6 @@ private:
     int m_row;
     int m_col;
     Tile m_tile;
+
+    QColor color(Tile tile) const;
 };

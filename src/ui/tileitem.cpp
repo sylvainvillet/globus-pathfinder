@@ -7,17 +7,21 @@
 TileItem::TileItem(int row, int col, const Tile& tile, qreal size)
     : QGraphicsRectItem(col * size, row * size, size, size),
     m_row(row), m_col(col), m_tile(tile) {
-    setBrush(QBrush(tile.color()));
+    setBrush(QBrush(color(tile)));
     setPen(QPen(Qt::black));
     setAcceptHoverEvents(true);
 }
 
 void TileItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     QGraphicsRectItem::mousePressEvent(event);
-    if (event->button() == Qt::LeftButton) {
-        emit leftClicked(m_row, m_col);
-    } else if (event->button() == Qt::RightButton) {
-        emit rightClicked(m_row, m_col);
+    clicked(m_row, m_col);
+}
+
+QColor TileItem::color(Tile tile) const {
+    switch (tile.type()) {
+    case Tile::Type::Start:     return Qt::red;
+    case Tile::Type::Target:    return Qt::blue;
+    case Tile::Type::Elevated:  return Qt::green;
+    case Tile::Type::Reachable: return Qt::white;
     }
-    // no actions on middle button
 }

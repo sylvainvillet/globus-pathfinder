@@ -30,8 +30,6 @@ public:
     bool isElevated() const   { return m_type == Type::Elevated; }
     bool isReachable() const  { return m_type == Type::Reachable; }
 
-    QColor color() const;
-
 private:
     Type m_type;
 };

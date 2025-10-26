@@ -12,12 +12,3 @@ Tile::Tile(double value) {
         m_type = Type::Elevated;
     }
 }
-
-QColor Tile::color() const {
-    switch (m_type) {
-    case Type::Start:     return Qt::red;
-    case Type::Target:    return Qt::blue;
-    case Type::Elevated:  return Qt::green;
-    case Type::Reachable: return Qt::white;
-    }
-}

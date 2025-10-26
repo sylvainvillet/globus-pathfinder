@@ -23,8 +23,7 @@ public:
     void draw(const GameMap& map, const QVector<QPoint>& path);        // Provide the map to draw
 
 signals:
-    void tileLeftClicked(int row, int col);
-    void tileRightClicked(int row, int col);
+    void tileClicked(int row, int col);
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
