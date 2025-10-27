@@ -18,10 +18,16 @@ public:
 
     // Find the shortest path from start to target using A* algorithm
     // Returns a list of positions from start to target (empty if no path)
-    QVector<QPoint> findPath() const;
+    void findPath(BattleUnit& unit) const;
 
 private:
     const GameMap& m_map;
+    const QPoint m_neighbors_deltas[4] = {
+        QPoint(1, 0),
+        QPoint(-1, 0),
+        QPoint(0, 1),
+        QPoint(0, -1),
+    };
 
     struct Node {
         QPoint pos;

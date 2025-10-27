@@ -13,30 +13,21 @@
 #include <QGraphicsScene>
 #include <QGraphicsView>
 #include "mapview.h"
-#include "../models/gamemap.h"
+#include "../logic/gamestate.h"
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget* parent = nullptr);
+    explicit MainWindow(GameState &state, QWidget* parent = nullptr);
 
 private slots:
     void importJsonMap();
     void exportJsonMap();
-    void exportJsonPath();
-    void refresh();
-    void findPath();
-    void travel();
 
 private:
     void createMenus();
 
-    GameMap* m_map = nullptr;
-    QVector<QPoint> m_path;
-    QVector<QPoint> m_last_path;
-
-    MapView* m_map_view = nullptr;
-
-    QTimer* m_travel_timer = nullptr;
+    GameState &m_state;
+    MapView m_map_view;
 };

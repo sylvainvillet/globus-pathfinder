@@ -14,6 +14,7 @@
 #include <QVector>
 #include <QString>
 #include <QPoint>
+#include "battleunit.h"
 #include "tile.h"
 
 class GameMap : public QObject {
@@ -29,22 +30,24 @@ public:
 
     int width() const { return m_width; }
     int height() const { return m_height; }
+
     const QVector<QVector<Tile>>& tiles() const { return m_tiles; }
+    QVector<BattleUnit> m_units;
 
-    QPoint startPosition() const;
-    QPoint targetPosition() const;
-
-    bool isPointInMap(QPoint point) const;
-    bool areCoordinatesInMap(int row, int col) const;
+    bool isPointInMap(QPoint position) const;
+    bool isTileReachable(QPoint position) const;
 
 public slots:
-    void setStart(int row, int col);
-    void setTarget(int row, int col);
+    void moveUnit(QPoint fromPosition, QPoint toPosition);
+    void setTarget(QPoint position);
 
 signals:
     void mapLoaded();
+    void mapChanged();
 
 private:
+    Tile* tileAt(QPoint point);
+
     int m_width = 0;
     int m_height = 0;
     QVector<QVector<Tile>> m_tiles;

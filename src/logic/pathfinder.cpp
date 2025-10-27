@@ -14,21 +14,18 @@ int PathFinder::heuristic(const QPoint& a, const QPoint& b) const {
 // Returns all the possible neighbors coordinates
 QVector<QPoint> PathFinder::neighbors(const QPoint& pos) const {
     QVector<QPoint> result;
-    const int dx[4] = {1, -1, 0, 0};
-    const int dy[4] = {0, 0, 1, -1};
 
     // Check all 4 neighbours
-    for (int i = 0; i < 4; ++i) {
-        int nx = pos.x() + dx[i];
-        int ny = pos.y() + dy[i];
-        if (!m_map.areCoordinatesInMap(ny, nx))
+    for (QPoint delta : m_neighbors_deltas) {
+        QPoint neighbor = pos + delta;
+        if (!m_map.isPointInMap(neighbor))
             continue;
 
-        const Tile& tile = m_map.tiles()[ny][nx];
+        const Tile& tile = m_map.tiles()[neighbor.y()][neighbor.x()];
         if (tile.isElevated()) // can't go there
             continue;
 
-        result.append(QPoint(nx, ny));
+        result.append(neighbor);
     }
     return result;
 }
@@ -44,13 +41,15 @@ QVector<QPoint> PathFinder::reconstructPath(Node* endNode) const {
     return path;
 }
 
-QVector<QPoint> PathFinder::findPath() const {
-    QPoint startPos = m_map.startPosition();
-    QPoint targetPos = m_map.targetPosition();
+void PathFinder::findPath(BattleUnit& unit) const {
+    QPoint startPos = unit.m_position;
+    QPoint targetPos = unit.m_target;
 
     // Check start and target validity
-    if (!m_map.isPointInMap(startPos) || !m_map.isPointInMap(targetPos))
-        return {};
+    if (!m_map.isPointInMap(startPos) || !m_map.isPointInMap(targetPos)) {
+        unit.m_path = {};
+        return;
+    }
 
     QHash<QPoint, Node*> allNodes;
     auto cmp = [](Node* a, Node* b){ return a->fCost() > b->fCost(); };
@@ -72,12 +71,14 @@ QVector<QPoint> PathFinder::findPath() const {
         if (current->pos == targetPos) {
             QVector<QPoint> path = reconstructPath(current);
             qDeleteAll(allNodes); // free memory
-            return path;
+            unit.m_path = path;
+            return;
         }
 
         closedSet.insert(current->pos);
 
-        for (QPoint newPos : neighbors(current->pos)) {
+        QVector<QPoint> currentNeighbors = neighbors(current->pos);
+        for (QPoint newPos : currentNeighbors) {
             // Ignore closed neighbors
             if (closedSet.contains(newPos))
                 continue;
@@ -101,5 +102,5 @@ QVector<QPoint> PathFinder::findPath() const {
     }
 
     qDeleteAll(allNodes); // no path found
-    return {};
+    unit.m_path = {};
 }

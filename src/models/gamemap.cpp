@@ -91,6 +91,8 @@ bool GameMap::loadFromJson(const QJsonObject& json) {
     }
 
     m_tiles.resize(m_height);
+    QPoint target = QPoint(-1, -1);
+    m_units.clear();
     for (int y = 0; y < m_height; ++y) {
         m_tiles[y].resize(m_width);
         for (int x = 0; x < m_width; ++x) {
@@ -98,7 +100,18 @@ bool GameMap::loadFromJson(const QJsonObject& json) {
             const double value = dataArray[idx].toDouble();
             Tile tile(value);
             m_tiles[y][x] = tile;
+            if (tile.isStart()) {
+                BattleUnit unit;
+                unit.m_position = QPoint(x, y);
+                m_units.append(unit);
+            } else if (tile.isTarget()) {
+                target = QPoint(x, y);
+            }
         }
+    }
+
+    for(BattleUnit& unit : m_units) {
+        unit.m_target = target;
     }
 
     emit mapLoaded();
@@ -130,53 +143,45 @@ QJsonObject GameMap::saveToJson() const {
     return root;
 }
 
-QPoint GameMap::startPosition() const {
-    for (int y = 0; y < m_height; ++y)
-        for (int x = 0; x < m_width; ++x)
-            if (m_tiles[y][x].isStart())
-                return QPoint(x, y);
-    return QPoint(-1, -1);
+Tile* GameMap::tileAt(QPoint position) {
+    if (isPointInMap(position)) {
+        return &m_tiles[position.y()][position.x()];
+    }
+    return nullptr;
 }
 
-QPoint GameMap::targetPosition() const {
-    for (int y = 0; y < m_height; ++y)
-        for (int x = 0; x < m_width; ++x)
-            if (m_tiles[y][x].isTarget())
-                return QPoint(x, y);
-    return QPoint(-1, -1);
-}
-
-bool GameMap::isPointInMap(QPoint point) const {
-    return areCoordinatesInMap(point.y(), point.x());
-}
-
-bool GameMap::areCoordinatesInMap(int row, int col) const {
+bool GameMap::isPointInMap(QPoint position) const {
+    int col = position.x();
+    int row = position.y();
     return col >= 0 && col < m_width && row >= 0 && row < m_height;
 }
 
-void GameMap::setStart(int row, int col) {
-    if (areCoordinatesInMap(row, col) &&
-        (m_tiles[row][col].isReachable() || m_tiles[row][col].isTarget())) {
-        do {
-            QPoint currentStart = startPosition();
-            if (isPointInMap(currentStart)) {
-                m_tiles[currentStart.y()][currentStart.x()].setType(Tile::Type::Reachable);
-            }
-        } while(isPointInMap(startPosition()));
-
-        m_tiles[row][col].setType(Tile::Type::Start);
+bool GameMap::isTileReachable(QPoint position) const {
+    if (isPointInMap(position)) {
+        return m_tiles[position.y()][position.x()].isReachable();
     }
 }
 
-void GameMap::setTarget(int row, int col) {
-    if (areCoordinatesInMap(row, col) && m_tiles[row][col].type() == Tile::Type::Reachable) {
-        do {
-            QPoint currentTarget = targetPosition();
-            if (isPointInMap(currentTarget)) {
-                m_tiles[currentTarget.y()][currentTarget.x()].setType(Tile::Type::Reachable);
-            }
-        } while(isPointInMap(targetPosition()));
+void GameMap::moveUnit(QPoint fromPosition, QPoint toPosition) {
+    Tile* fromTile = tileAt(fromPosition);
+    Tile* toTile = tileAt(toPosition);
+    if (fromTile == nullptr || toTile == nullptr)
+        return;
 
-        m_tiles[row][col].setType(Tile::Type::Target);
-    }
+    fromTile->setType(Tile::Type::Reachable);
+    toTile->setType(Tile::Type::Start);
+}
+
+void GameMap::setTarget(QPoint position) {
+    if (!isPointInMap(position) || tileAt(position)->type() != Tile::Type::Reachable)
+        return;
+
+    // Remove old target(s)
+    for (int y = 0; y < m_height; ++y)
+        for (int x = 0; x < m_width; ++x)
+            if (m_tiles[y][x].isTarget())
+                m_tiles[y][x].setType(Tile::Type::Reachable);
+
+    // Set new target
+    tileAt(position)->setType(Tile::Type::Target);
 }

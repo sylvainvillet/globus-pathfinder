@@ -2,7 +2,7 @@
  * mapview.h
  *
  * QGraphicsView-based widget to render a GameMap and optional path.
- * Provides signals for left/right tile clicks.
+ * Provides signal for tile clicks.
  *
  * Author: Sylvain Villet
  */
@@ -12,27 +12,26 @@
 #include <QVector>
 #include <QPoint>
 #include "../models/gamemap.h"
-#include "../models/tile.h"
 
 class MapView : public QGraphicsView
 {
     Q_OBJECT
 public:
-    explicit MapView(QWidget* parent = nullptr);
+    explicit MapView(const GameMap& map, QWidget* parent = nullptr);
 
-    void draw(const GameMap& map, const QVector<QPoint>& path);        // Provide the map to draw
+    void draw();
 
 signals:
-    void tileClicked(int row, int col);
+    void tileClicked(QPoint position);
 
 protected:
     void resizeEvent(QResizeEvent* event) override;
 
 private:
-    void drawMap();
-    void drawPath(const QVector<QPoint>& path);
+    void drawPaths();
 
-    QGraphicsScene* m_scene;
-    GameMap* m_map;
+    const GameMap& m_map;
+
+    QGraphicsScene m_scene;
     QVector<QGraphicsRectItem*> m_tileItems;   // Keep track of tiles
 };

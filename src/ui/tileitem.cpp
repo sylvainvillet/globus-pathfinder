@@ -4,9 +4,10 @@
 #include <QBrush>
 #include <QPen>
 
-TileItem::TileItem(int row, int col, const Tile& tile, qreal size)
-    : QGraphicsRectItem(col * size, row * size, size, size),
-    m_row(row), m_col(col), m_tile(tile) {
+TileItem::TileItem(QPoint position, const Tile& tile, qreal size)
+    : QGraphicsRectItem(position.x() * size, position.y() * size, size, size),
+    m_position(position),
+    m_tile(tile) {
     setBrush(QBrush(color(tile)));
     setPen(QPen(Qt::black));
     setAcceptHoverEvents(true);
@@ -14,7 +15,7 @@ TileItem::TileItem(int row, int col, const Tile& tile, qreal size)
 
 void TileItem::mousePressEvent(QGraphicsSceneMouseEvent* event) {
     QGraphicsRectItem::mousePressEvent(event);
-    clicked(m_row, m_col);
+    clicked(m_position);
 }
 
 QColor TileItem::color(Tile tile) const {

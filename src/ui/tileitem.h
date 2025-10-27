@@ -15,17 +15,16 @@
 class TileItem : public QObject, public QGraphicsRectItem {
     Q_OBJECT
 public:
-    TileItem(int row, int col, const Tile& tile, qreal size);
+    TileItem(QPoint position, const Tile& tile, qreal size);
 
 signals:
-    void clicked(int row, int col);
+    void clicked(QPoint position);
 
 protected:
     void mousePressEvent(QGraphicsSceneMouseEvent* event) override;
 
 private:
-    int m_row;
-    int m_col;
+    QPoint m_position;
     Tile m_tile;
 
     QColor color(Tile tile) const;
